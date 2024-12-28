@@ -1,7 +1,6 @@
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { cities } from '@/app/data/cities';
 import { Autocomplete, Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { DateRange, DateRangePicker } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -17,7 +16,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
     const [toValue, setToValue] = useState(cities[1]);
     const [departureValue, setDepartureValue] = useState<Dayjs | null>(dayjs().add(1, 'day'));
     const [arrivalValue, setArrivalValue] = useState<Dayjs | null>(dayjs().add(7, 'day'));
-    const [numberOfAdults, setNumberOfAdults] = useState(1);    
+    const [numberOfAdults, setNumberOfAdults] = useState(1);
 
     useEffect(() => {
         setSearchParams({
@@ -25,12 +24,10 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
             destinationLocationCode: toValue?.city || '',
             departureDate: departureValue ? departureValue.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
             returnDate: arrivalValue ? arrivalValue.format('YYYY-MM-DD') : dayjs().add(7, 'day').format('YYYY-MM-DD'),
-            adults: numberOfAdults,            
-            max: 20,            
+            adults: numberOfAdults,
+            max: 20,
         });
-    }
-        , [fromValue, toValue, departureValue, arrivalValue, numberOfAdults]);
-
+    }, [fromValue, toValue, departureValue, arrivalValue, numberOfAdults]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,21 +36,12 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
             destinationLocationCode: toValue?.city || '',
             departureDate: departureValue ? departureValue.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
             returnDate: arrivalValue ? arrivalValue.format('YYYY-MM-DD') : dayjs().add(7, 'day').format('YYYY-MM-DD'),
-            adults: numberOfAdults,            
+            adults: numberOfAdults,
             max: 20,
-
         };
         setSearchParams(newSearchParams);
         console.log('Form submitted', newSearchParams);
     };
-
-    function handleDateChange(newValue: DateRange<Dayjs>) {
-
-        console.log('Date changed', newValue);
-        setDepartureValue(newValue[0]);
-        setArrivalValue(newValue[1]);
-        // console.log(newValue, searchParams.departure, searchParams.arrival);
-    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -93,8 +81,23 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
                     />
                 </Box>
                 <br />
-                <Box sx={{ display: 'flex', gap: '1rem', blockSize: '10' }}>
-                    <DateRangePicker value={[departureValue, arrivalValue]} localeText={{ start: 'Departure', end: 'Arrival' }} onChange={handleDateChange} />
+                <Box sx={{ display: 'flex', gap: '1rem' }}>
+                    <DatePicker
+                        label="Departure Date"
+                        value={departureValue}
+                        onChange={(newValue) => setDepartureValue(newValue)}
+                        slots={{
+                            textField: TextField,
+                        }}
+                    />
+                    <DatePicker
+                        label="Arrival Date"
+                        value={arrivalValue}
+                        onChange={(newValue) => setArrivalValue(newValue)}
+                        slots={{
+                            textField: TextField,
+                        }}
+                    />
                     <FormControl fullWidth>
                         <InputLabel id="number-of-adults-label">Number of Adults</InputLabel>
                         <Select
@@ -113,8 +116,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
                     </FormControl>
                 </Box>
                 <br />
-                <CustomButton type="submit" name="Search" variant="contained" color="primary" />
-                
+                <CustomButton type="submit" name="Search" color="primary" />
             </Box>
         </LocalizationProvider>
     );
