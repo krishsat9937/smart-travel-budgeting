@@ -27,7 +27,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
             adults: numberOfAdults,
             max: 20,
         });
-    }, [fromValue, toValue, departureValue, arrivalValue, numberOfAdults]);
+    }, [fromValue, toValue, departureValue, arrivalValue, numberOfAdults, setSearchParams]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
