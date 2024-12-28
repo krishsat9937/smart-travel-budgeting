@@ -74,11 +74,9 @@ const HomePage: React.FC = () => {
                     Welcome to Travel Budgeter {user?.username}!
                 </Typography>
                 <CustomButton
-                    name="Logout"
-                    variant="contained"
+                    name="Logout"                    
                     color="primary"
-                    onClick={handleLogout}
-                    sx={{ textTransform: 'none' }}
+                    onClick={handleLogout}                    
                 />
                     
                 
