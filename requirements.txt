@@ -1,5 +1,8 @@
 Django==5.0.1
 django-cors-headers==4.3.1
-djangorestframework==3.14.0
+djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 djoser==2.2.2
+drf_yasg==1.21.7
+googlemaps==4.10.0
+python-dotenv==1.0.1

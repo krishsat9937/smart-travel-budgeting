@@ -1,22 +1,34 @@
-import type { Metadata } from "next";
+'use client';
+
+import { ThemeProvider } from '@mui/material/styles';
+
+import CssBaseline from '@mui/material/CssBaseline';
 import { Inter } from "next/font/google";
-import "./globals.css";
+import { QueryClient, QueryClientProvider } from 'react-query';
+import "./styles/global.css";
+
+import theme from './styles/theme';
+
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Welcome to Django Nextjs Auth",
-  description: "A demonstration of a codebase with Django and Next.js",
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient();
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+      <ThemeProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+        <CssBaseline />
+          {children}
+        </QueryClientProvider>
+      </ThemeProvider>
+      </body>
     </html>
   );
 }
