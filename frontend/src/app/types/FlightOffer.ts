@@ -14,6 +14,7 @@ export interface Segment {
   export interface Itinerary {
     duration: string;
     segments: Segment[];
+    transit_details?: any[];
   }
   
   export interface FlightOffer {
