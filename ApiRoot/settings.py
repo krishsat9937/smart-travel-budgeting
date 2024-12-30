@@ -29,6 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'https://travel-budgeter-frontend.vercel.app',
+    'https://smart-travel-budgeting.onrender.com',
     'http://localhost:3000',
 ]
 
@@ -150,6 +151,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "https://travel-budgeter-frontend.vercel.app",
+    "https://smart-travel-budgeting.onrender.com",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
@@ -164,3 +166,5 @@ DJOSER = {
     "LOGIN_FIELD": "username",
 
 }
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
