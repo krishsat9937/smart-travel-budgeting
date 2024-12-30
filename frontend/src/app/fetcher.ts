@@ -5,7 +5,7 @@ const { handleJWTRefresh, storeToken, getToken } = AuthActions();
 
 const api = () => {
   return (
-    wretch("http://localhost:8000")
+    wretch(`${process.env.NEXT_PUBLIC_API_BASE_URL}`)
       .headers({
         // "Access-Control-Allow-Origin": "http://localhost:3000",
         "Content-Type": "application/json",
