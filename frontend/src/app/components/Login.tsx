@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type FormData = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -22,12 +22,12 @@ const Login = () => {
   const { login, storeToken } = AuthActions();
 
   const onSubmit = (data: FormData) => {
-    login(data.email, data.password)
+    login(data.username, data.password)
       .json((json) => {
         storeToken(json.access, "access");
         storeToken(json.refresh, "refresh");
 
-        router.push("dashboard");
+        router.push("home");
       })
       .catch((err) => {
         setError("root", { type: "manual", message: err.json.detail });
@@ -40,17 +40,17 @@ const Login = () => {
         <h3 className="text-2xl font-semibold">Login to your account</h3>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div>
-            <label className="block" htmlFor="email">
-              Email
+            <label className="block" htmlFor="username">
+              Username
             </label>
             <input
               type="text"
-              placeholder="Email"
-              {...register("email", { required: true })}
+              placeholder="Username"
+              {...register("username", { required: true })}
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
             />
-            {errors.email && (
-              <span className="text-xs text-red-600">Email is required</span>
+            {errors.username && (
+              <span className="text-xs text-red-600">Username is required</span>
             )}
           </div>
           <div className="mt-4">
