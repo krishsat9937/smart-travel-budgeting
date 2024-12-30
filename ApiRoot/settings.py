@@ -25,7 +25,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = "django-insecure-us)-)2ol=f725b_aq+#!2b)bupxd58y67ir3!=-q663vb_moyy"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = [
 #     'https://travel-budgeter-frontend.vercel.app',
