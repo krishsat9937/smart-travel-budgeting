@@ -27,11 +27,11 @@ SECRET_KEY = "django-insecure-us)-)2ol=f725b_aq+#!2b)bupxd58y67ir3!=-q663vb_moyy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    'https://travel-budgeter-frontend.vercel.app',
-    'https://smart-travel-budgeting.onrender.com',
-    'http://localhost:3000',
-]
+# ALLOWED_HOSTS = [
+#     'https://travel-budgeter-frontend.vercel.app',
+#     'https://smart-travel-budgeting.onrender.com',
+#     'http://localhost:3000',
+# ]
 
 # Application definition
 
@@ -62,8 +62,6 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # If using cookies/JWTs
-
-# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "ApiRoot.urls"
 
@@ -167,4 +165,7 @@ DJOSER = {
 
 }
 
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+# CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['*']
+ALLOWED_HOSTS = ['*']
