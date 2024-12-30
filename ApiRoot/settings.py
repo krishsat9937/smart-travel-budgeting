@@ -25,9 +25,12 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = "django-insecure-us)-)2ol=f725b_aq+#!2b)bupxd58y67ir3!=-q663vb_moyy"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://travel-budgeter-frontend.vercel.app',
+    'http://localhost:3000',
+]
 
 # Application definition
 
@@ -146,6 +149,7 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "https://travel-budgeter-frontend.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

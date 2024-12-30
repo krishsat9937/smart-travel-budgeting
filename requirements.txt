@@ -6,3 +6,4 @@ djoser==2.2.2
 drf_yasg==1.21.7
 googlemaps==4.10.0
 python-dotenv==1.0.1
+gunicorn==23.0.0
