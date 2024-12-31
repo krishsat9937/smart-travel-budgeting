@@ -96,7 +96,7 @@ def get_iata_code(city_name, api_key):
             response.raise_for_status()  # Raise an exception for HTTP errors
 
             # Cache the response for future use
-            cache.set(city_name, response.json(), timeout=3600)  # Cache for 1 hour
+            cache.set(city_name, response.json(), timeout=300)  # Cache for 1 hour
 
             # Parse the JSON response
             data = response.json()
@@ -194,7 +194,7 @@ def get_flight_offers(bearer_token, params):
             # print(f"Flight offers: {json.dumps(flight_offers)}")
 
             # Cache the parsed flight offers for a defined timeout (e.g., 1 hour)
-            cache.set(cache_key, flight_offers, timeout=3600)
+            cache.set(cache_key, flight_offers, timeout=300)
             print(f"Cached flight offers for params: {params}")
         else:
             print(
