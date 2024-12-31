@@ -20,7 +20,7 @@ currency_conversion_rates = {
     # Add other currencies as needed
 }
 
-googlemaps_api_key = "AIzaSyCsWfdK1DKOd6ZRrVs2e6DjK9RFr7Qltao"
+googlemaps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Define a global variable to store the cached token and its expiry time
 cached_token = None
