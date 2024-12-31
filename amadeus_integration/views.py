@@ -1,6 +1,5 @@
 import traceback
 
-from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg import openapi
@@ -16,7 +15,6 @@ from amadeus_integration.util import (
     get_iata_code,
     recommend_best_options,
 )
-from amadeus_integration.parsers import FlightOfferParser
 from rest_framework import serializers
 
 
