@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography } from '@mui/material';
+import { Container, Box, Typography, Alert } from '@mui/material';
 import Header from './Header';
 import ResultsGrid from './ResultsGrid';
 import SearchForm from './SearchForm';
@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
         returnDate: dayjs().add(7, 'day').format('YYYY/MM/DD'),
         adults: 1,
         nonStop: false,
-        max: 100        
+        max: 100
     });
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -76,9 +76,9 @@ const HomePage: React.FC = () => {
                     onClick={() => setShowBookings(!showBookings)} // Toggle bookings visibility
                 />
                 <CustomButton
-                    name="Logout"                    
+                    name="Logout"
                     color="secondary"
-                    onClick={handleLogout}                    
+                    onClick={handleLogout}
                 />
             </Container>
 
@@ -91,12 +91,24 @@ const HomePage: React.FC = () => {
                             display: 'flex',
                             justifyContent: 'center',
                             border: '1px solid black',
-                            padding: '1rem',                    
+                            padding: '1rem',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                         }}
                     >
                         <SearchForm setSearchParams={setSearchParams} />
+                    </Container>
+                    <Container fixed
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',                            
+                            padding: '1rem',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                        }}>
+                        <Alert severity="info">
+                            <strong>Note:</strong> The data displayed on this page is live test data retrieved from the Amadeus API. It may not represent real-world flight prices.
+                        </Alert>
                     </Container>
 
                     <Container fixed>
