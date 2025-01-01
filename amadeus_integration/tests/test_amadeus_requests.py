@@ -5,7 +5,7 @@ from rest_framework import status
 
 
 class GetAmadeusTokenTestCase(TestCase):
-    @patch("amadeus_integration.views.get_amadeus_token")
+    @patch("amadeus_integration.flight_views.get_amadeus_token")
     def test_get_amadeus_token_success(self, mock_get_token):
         # Mocking the response for get_amadeus_token
         mock_get_token.return_value = "test-token"  # Expected mock token
@@ -17,7 +17,7 @@ class GetAmadeusTokenTestCase(TestCase):
         self.assertEqual(response.json(), {"token": "test-token"})
 
 
-    @patch("amadeus_integration.views.get_amadeus_token")
+    @patch("amadeus_integration.flight_views.get_amadeus_token")
     def test_get_amadeus_token_failure(self, mock_get_token):
         # Simulate failure in getting token
         mock_get_token.return_value = None  # This should trigger a 500 error in the view

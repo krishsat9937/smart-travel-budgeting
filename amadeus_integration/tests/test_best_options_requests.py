@@ -4,8 +4,8 @@ from django.urls import reverse
 from rest_framework import status
 
 class BestTravelOptionsTestCase(TestCase):
-    @patch("amadeus_integration.views.get_amadeus_token")
-    @patch("amadeus_integration.views.recommend_best_options")
+    @patch("amadeus_integration.flight_views.get_amadeus_token")
+    @patch("amadeus_integration.flight_views.recommend_best_options")
     def test_get_best_travel_options_success(self, mock_recommend, mock_get_token):
         # Mocking responses
         mock_get_token.return_value = "test-token"
@@ -26,7 +26,7 @@ class BestTravelOptionsTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {"recommendations": [{"id": "1", "price": 150}]})
 
-    @patch("amadeus_integration.views.get_amadeus_token")
+    @patch("amadeus_integration.flight_views.get_amadeus_token")
     def test_get_best_travel_options_token_failure(self, mock_get_token):
         # Simulate token failure
         mock_get_token.return_value = None
