@@ -59,7 +59,7 @@ const ResultsGrid: React.FC<ResultsGridProps> = (props: ResultsGridProps) => {
   }
 
   // Success state
-  return <FlightsPage flightsData={data} />;
+  return <FlightsPage searchParams={searchParams} flightsData={data} />;
 };
 
 export default ResultsGrid;

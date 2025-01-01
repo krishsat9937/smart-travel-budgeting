@@ -36,3 +36,7 @@ const api = () => {
 export const fetcher = (url: string): Promise<any> => {
   return api().get(url).json();
 };
+
+export const postFetcher = (url: string, body: any): Promise<any> => {
+  return api().url(url).post(body).json();
+};

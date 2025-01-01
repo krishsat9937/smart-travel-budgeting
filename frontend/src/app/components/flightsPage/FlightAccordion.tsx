@@ -3,13 +3,22 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, IconButton, Box,
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { FlightOffer } from '@/app/types/FlightOffer';
+import BookNow from '../booking/BookNow';
+import { postFetcher } from '@/app/fetcher';
 
 interface FlightAccordionProps {
+  searchParams: any;
   flights: FlightOffer[];
 }
 
-const FlightAccordion: React.FC<FlightAccordionProps> = ({ flights }) => {
+const FlightAccordion: React.FC<FlightAccordionProps> = ({ searchParams, flights }) => {
+  
+  // Define the open state for each flight
   const [open, setOpen] = useState<Record<string, boolean>>({});
+
+  // Define the loading state for each flight
+  const [loading, setLoading] = useState<Record<string, boolean>>({}); // Ensure this exists
+
 
   const handleClick = (id: string) => {
     setOpen(prev => ({
@@ -21,6 +30,31 @@ const FlightAccordion: React.FC<FlightAccordionProps> = ({ flights }) => {
   const formatTime = (dateString: string): string => {
     return new Date(dateString).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
+
+  const handleOrder = async (
+    flightOffer: FlightOffer,
+    bookingDetails: { passengers: any; email: string; address: any }
+  ) => {
+    
+    console.log("final booking params: ", bookingDetails);
+    const { passengers, email, address } = bookingDetails;
+  
+    try {
+      // Use the postFetcher to send the request
+      const response = await postFetcher("/book-flight/", {
+        "flightOffer": flightOffer.rawResponse,
+        passengers,
+        email,
+        address
+      });
+  
+      alert(`Order created successfully: ${response.orderId}`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      alert("Failed to create order. Please try again later.");
+    }
+  };
+  
 
   return (
     <TableContainer component={Paper}>
@@ -37,7 +71,18 @@ const FlightAccordion: React.FC<FlightAccordionProps> = ({ flights }) => {
                 <TableCell component="th" scope="row">
                   Flight {flight.id}
                 </TableCell>
-                <TableCell align="right">{flight.price} {flight.currency}</TableCell>
+                {/* <TableCell align="right">{flight.price} {flight.currency}</TableCell> */}
+                <TableCell align="right">
+                  <BookNow
+                    searchParams={searchParams}
+                    flightId={flight.id}
+                    price={flight.price}
+                    currency={flight.currency}
+                    flightOffer={flight}
+                    handleOrder={handleOrder}
+                    isLoading={loading[flight.id] || false}
+                  />
+                </TableCell>
               </TableRow>
               {open[flight.id] && (
                 <TableRow>

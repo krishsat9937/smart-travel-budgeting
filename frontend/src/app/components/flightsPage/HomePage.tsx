@@ -1,28 +1,25 @@
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { Box, Container, Typography } from '@mui/material';
-import Tab from '@mui/material/Tab';
-import dayjs from 'dayjs';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Container, Box, Typography } from '@mui/material';
 import Header from './Header';
 import ResultsGrid from './ResultsGrid';
 import SearchForm from './SearchForm';
 import CustomButton from './Button';
 import { useRouter } from "next/navigation";
-import { fetcher } from "@/app/fetcher";
-import useSWR from "swr";
-
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import Tab from '@mui/material/Tab';
+import dayjs from 'dayjs';
+import useSWR from 'swr';
 import { AuthActions } from '@/app/auth/utils';
+import { fetcher } from '@/app/fetcher';
+import Bookings from '../booking/Bookings';
 
 const HomePage: React.FC = () => {
-
     const { data: user } = useSWR("/auth/users/me/", fetcher);
-
     const router = useRouter();
-
-    const [value, setValue] = useState('1');    
+    const [value, setValue] = useState('1');
+    const [showBookings, setShowBookings] = useState(false);
 
     const [searchParams, setSearchParams] = useState({
         originLocationCode: '',
@@ -74,45 +71,57 @@ const HomePage: React.FC = () => {
                     Welcome to Travel Budgeter {user?.username}!
                 </Typography>
                 <CustomButton
-                    name="Logout"                    
+                    name={showBookings ? "Hide Bookings" : "Your Bookings"}
                     color="primary"
+                    onClick={() => setShowBookings(!showBookings)} // Toggle bookings visibility
+                />
+                <CustomButton
+                    name="Logout"                    
+                    color="secondary"
                     onClick={handleLogout}                    
                 />
-                    
-                
             </Container>
-            <Container
-                fixed
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    border: '1px solid black',
-                    padding: '1rem',
-                    backgroundImage: 'url("https://example.com/second-background.jpg")', // Replace with your second background image URL
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            >
-                <SearchForm  setSearchParams={setSearchParams}/>
-            </Container>
-            <Container fixed>
-                <Box sx={{ width: '100%', typography: 'body1' }}>
-                    <TabContext value={value}>
-                        <Box sx={{ borderColor: 'divider' , p: 1}}>
-                            <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                <Tab label="Standard Flight Suggestions" value="1" />
-                                <Tab label="Best Travel Suggestions" value="2" />
-                            </TabList>
+
+            {/* Conditionally render search and suggestions */}
+            {!showBookings && (
+                <>
+                    <Container
+                        fixed
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            border: '1px solid black',
+                            padding: '1rem',                    
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                        }}
+                    >
+                        <SearchForm setSearchParams={setSearchParams} />
+                    </Container>
+
+                    <Container fixed>
+                        <Box sx={{ width: '100%', typography: 'body1' }}>
+                            <TabContext value={value}>
+                                <Box sx={{ borderColor: 'divider', p: 1 }}>
+                                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                        <Tab label="Standard Flight Suggestions" value="1" />
+                                        <Tab label="Best Travel Suggestions" value="2" />
+                                    </TabList>
+                                </Box>
+                                <TabPanel value="1">
+                                    <ResultsGrid searchParams={searchParams} endpoint='flight-offers' />
+                                </TabPanel>
+                                <TabPanel value="2">
+                                    <ResultsGrid searchParams={searchParams} endpoint='best-options' />
+                                </TabPanel>
+                            </TabContext>
                         </Box>
-                        <TabPanel value="1">
-                            <ResultsGrid searchParams={searchParams} endpoint='flight-offers'/>
-                        </TabPanel>
-                        <TabPanel value="2">
-                            <ResultsGrid searchParams={searchParams} endpoint='best-options'/>
-                        </TabPanel>
-                    </TabContext>
-                </Box>
-            </Container>
+                    </Container>
+                </>
+            )}
+
+            {/* Display bookings if showBookings is true */}
+            {showBookings && <Bookings />}
         </>
     );
 };

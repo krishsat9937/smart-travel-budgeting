@@ -25,7 +25,8 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from django.urls import re_path
 
-from amadeus_integration.views import GetAmadeusToken, GetFlightOffers, BestTravelOptions
+from amadeus_integration.flight_views import GetAmadeusToken, GetFlightOffers, BestTravelOptions
+from amadeus_integration.booking_views import BookFlightsRequest, BookingsView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -72,5 +73,9 @@ urlpatterns = [
     path("get-token/", GetAmadeusToken.as_view(), name="get-amadeus-token"),
     path("flight-offers/", GetFlightOffers.as_view(), name="get-flight-offers"),
     path("best-options/", BestTravelOptions.as_view(), name="best-travel-options"),
+
+    # booking endpoints
+    path("bookings/", BookingsView.as_view(), name="bookings"),
+    path("book-flight/", BookFlightsRequest.as_view(), name="book-flight"),
     
 ]

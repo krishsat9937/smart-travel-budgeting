@@ -12,10 +12,11 @@ interface FlightOffer {
 }
 
 interface FlightsPageProps {
+    searchParams: any; // Assuming this prop passes search parameters
     flightsData: FlightOffer[]; // Assuming this prop passes all flights data
 }
 
-const FlightsPage: React.FC<FlightsPageProps> = ({ flightsData }) => {
+const FlightsPage: React.FC<FlightsPageProps> = ({ searchParams, flightsData }) => {
     const itemsPerPage = 10;
     const [page, setPage] = useState(1);
     const pageCount = Math.ceil(flightsData.length / itemsPerPage);
@@ -33,8 +34,7 @@ const FlightsPage: React.FC<FlightsPageProps> = ({ flightsData }) => {
             </Box>
         );
     }
-
-    console.log("Flights data: ",flightsData);
+    
     const currentPageData = flightsData?.slice(
         (page - 1) * itemsPerPage,
         page * itemsPerPage
@@ -45,7 +45,7 @@ const FlightsPage: React.FC<FlightsPageProps> = ({ flightsData }) => {
             <Typography variant="h5" component="h1" gutterBottom>
                 {`Showing ${currentPageData.length} of ${flightsData.length} results`}
             </Typography>
-            <FlightAccordion flights={currentPageData} />
+            <FlightAccordion searchParams={searchParams} flights={currentPageData} />
             <Box display="flex" justifyContent="center" marginTop={4}>
                 <Pagination count={pageCount} page={page} onChange={handleChangePage} />
             </Box>

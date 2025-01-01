@@ -1,8 +1,19 @@
 import re
+import json
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 class FlightOfferParser:
-    def __init__(self, flight_data):
+    def __init__(self, flight_data, preserve_raw=True):
+        """
+        Initialize the parser with flight data.
+        Args:
+            flight_data (dict): The raw API response data.
+            preserve_raw (bool): Whether to include the raw API response in the parsed result.
+        """
         self.flight_data = flight_data
+        self.preserve_raw = preserve_raw
 
     @staticmethod
     def parse_duration(duration_str):
@@ -45,9 +56,11 @@ class FlightOfferParser:
                     itinerary_details['segments'].append(segment_details)
                 
                 offer_details['itineraries'].append(itinerary_details)
-            
+
+            # Add the raw API response for this offer
+            if self.preserve_raw:
+                offer_details['rawResponse'] = json.dumps(offer, indent=2)
+
             offers.append(offer_details)
         
         return offers
-
-# The rest of the usage would remain the same.

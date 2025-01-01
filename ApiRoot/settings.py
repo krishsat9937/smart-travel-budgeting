@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # installed apps
+    "amadeus_integration",    
     "rest_framework",
     "djoser",    
     "drf_yasg",

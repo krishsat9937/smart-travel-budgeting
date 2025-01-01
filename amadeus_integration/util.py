@@ -7,18 +7,27 @@ import hashlib
 import googlemaps
 import requests
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from django.core.cache import cache
 
 from amadeus_integration.parsers import FlightOfferParser
 from .constants import CITIES
+from datetime import datetime
+from .models import Booking, Traveler, Contact, FlightSegment, Itinerary, Price, Warning
+from django.db import transaction
+# from django.utils.timezone import now
+from amadeus_integration.models import (
+    Booking,
+    Traveler,
+    Contact,
+    FlightSegment,
+    Itinerary,
+    Price,
+    Warning,
+)
 
-# Example conversion rates to USD; you'll need to update these based on current rates
-currency_conversion_rates = {
-    "EUR": 1.08,  # Example rate: 1 Euro = 1.08 USD
-    "INR": 0.013,  # Example rate: 1 Indian Rupee = 0.013 USD
-    # Add other currencies as needed
-}
+
+
 
 googlemaps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
@@ -161,6 +170,7 @@ def get_top_3_offers(flight_offers):
 
 def get_flight_offers(bearer_token, params):
     try:
+        cache.clear()
         flight_offers = []
         # Generate a stable and unique cache key using a hash of the parameters
         params_string = json.dumps(
@@ -527,3 +537,120 @@ def recommend_best_options(
         
         return top_3_offers    
 
+
+
+def store_booking(user, booking_response):
+    """
+    Store a booking in the database based on the Amadeus API response.
+
+    Args:
+        user (User): The authenticated user making the booking.
+        booking_response (dict): The raw response JSON from the Amadeus booking API.
+
+    Returns:
+        Booking: The created booking instance.
+
+    Raises:
+        ValueError: If required fields are missing or the response format is invalid.
+    """
+    try:
+        with transaction.atomic():
+            # Extract necessary data
+            data = booking_response["data"]
+            warnings = booking_response.get("warnings", [])
+            travelers_data = data["travelers"]
+            contacts_data = data["contacts"]
+            flight_offers = data["flightOffers"]
+            associated_records = data.get("associatedRecords", [{}])[0]
+            price_data = flight_offers[0]["price"]
+
+            # Create travelers
+            travelers = []
+            for traveler in travelers_data:
+                doc = traveler["documents"][0]
+                traveler_instance = Traveler.objects.create(
+                    first_name=traveler["name"]["firstName"],
+                    last_name=traveler["name"]["lastName"],
+                    date_of_birth=traveler["dateOfBirth"],
+                    passport_number=doc["number"],
+                    passport_expiry_date=doc["expiryDate"],
+                    passport_issuance_country=doc["issuanceCountry"],
+                    nationality=doc["nationality"],
+                )
+                travelers.append(traveler_instance)
+
+            # Create contacts
+            contacts = []
+            for contact in contacts_data:
+                address = contact["address"]
+                contact_instance = Contact.objects.create(
+                    email=contact["emailAddress"],
+                    addressee_name=contact["addresseeName"]["firstName"],
+                    address_lines="\n".join(address["lines"]),
+                    postal_code=address["postalCode"],
+                    city_name=address["cityName"],
+                    country_code=address["countryCode"],
+                )
+                contacts.append(contact_instance)
+
+            # Create flight segments and itineraries
+            itineraries = []
+            for itinerary in flight_offers[0]["itineraries"]:
+                segments = []
+                for segment in itinerary["segments"]:
+                    emissions = segment.get("co2Emissions", [{}])[0]
+                    segment_instance = FlightSegment.objects.create(
+                        departure_iata_code=segment["departure"]["iataCode"],
+                        departure_terminal=segment["departure"].get("terminal"),
+                        departure_time=segment["departure"]["at"],
+                        arrival_iata_code=segment["arrival"]["iataCode"],
+                        arrival_terminal=segment["arrival"].get("terminal"),
+                        arrival_time=segment["arrival"]["at"],
+                        carrier_code=segment["carrierCode"],
+                        flight_number=segment["number"],
+                        aircraft_code=segment["aircraft"]["code"],
+                        duration=segment["duration"],
+                        number_of_stops=segment["numberOfStops"],
+                        co2_emissions_weight=emissions.get("weight", 0),
+                        co2_emissions_unit=emissions.get("weightUnit", ""),
+                        cabin=emissions.get("cabin", ""),
+                    )
+                    segments.append(segment_instance)
+
+                itinerary_instance = Itinerary.objects.create()
+                itinerary_instance.segments.set(segments)
+                itineraries.append(itinerary_instance)
+
+            # Create price
+            taxes = price_data.get("taxes", [])
+            price_instance = Price.objects.create(
+                currency=price_data["currency"],
+                total=price_data["total"],
+                base=price_data["base"],
+                refundable_taxes=price_data.get("refundableTaxes", 0),
+                grand_total=price_data["grandTotal"],
+            )
+
+            # Create booking
+            booking = Booking.objects.create(
+                user=user,
+                booking_id=data["id"],
+                reference=associated_records["reference"],
+                creation_date=associated_records["creationDate"],
+                flight_offer_id=associated_records["flightOfferId"],
+                price=price_instance,
+                ticketing_option=data["ticketingAgreement"]["option"],
+            )
+            booking.travelers.set(travelers)
+            booking.contacts.set(contacts)
+            booking.itineraries.set(itineraries)
+
+            # Create warnings
+            for warning in warnings:
+                Warning.objects.create(
+                    booking=booking, title=warning["title"], detail=warning["detail"]
+                )
+
+            return booking
+    except Exception as e:
+        raise ValueError(f"Error storing booking: {e}")

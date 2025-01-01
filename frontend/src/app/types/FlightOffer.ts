@@ -22,6 +22,7 @@ export interface Segment {
     price: string;
     currency: string;
     itineraries: Itinerary[];
+    rawResponse?: any;
   }
 
   export interface FlightOfferResults {
