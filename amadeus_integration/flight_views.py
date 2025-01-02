@@ -123,8 +123,7 @@ class GetFlightOffers(APIView):
         }
 
         # get amedeus token using the client credentials flow
-        token = get_amadeus_token()
-        print(f"Amadeus token response: {token}")
+        token = get_amadeus_token()        
 
         if not token:
             return Response(
@@ -178,8 +177,7 @@ class GetFlightOffers(APIView):
             }
 
             # get amedeus token using the client credentials flow
-            token = get_amadeus_token()
-            print(f"Amadeus token response: {token}")
+            token = get_amadeus_token()            
 
             if not token:
                 return Response(
@@ -286,8 +284,7 @@ class BestTravelOptions(APIView):
         }
 
         # get amedeus token using the client credentials flow
-        token = get_amadeus_token()
-        print(f"Amadeus token response: {token}")
+        token = get_amadeus_token()        
 
         if not token:
             return Response(
@@ -342,7 +339,6 @@ class BestTravelOptions(APIView):
 
             # Get Amadeus token
             token = get_amadeus_token()
-            print(f"Amadeus token response: {token}")
 
             if not token:
                 return Response(
