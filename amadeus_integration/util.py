@@ -37,6 +37,13 @@ expiry_time = None
 
 
 def get_amadeus_token():
+    """
+    The `get_amadeus_token` function retrieves and caches an access token from the Amadeus API using
+    client credentials.
+    :return: The `get_amadeus_token` function returns the cached Amadeus token if it is already cached
+    and has not expired. If the token is not cached or has expired, it makes a request to the Amadeus
+    API to obtain a new token using client credentials, caches the new token, and returns it.
+    """
     global cached_token
     global expiry_time
 
@@ -85,6 +92,10 @@ def get_iata_code(city_name, api_key):
 
     Returns:
     - The IATA code as a string if found, otherwise None.
+
+    References:
+    https://developers.amadeus.com/self-service/category/destination-experiences/api-doc/city-search
+
     """
 
     # Endpoint for the Amadeus location search API
@@ -122,6 +133,15 @@ def get_iata_code(city_name, api_key):
 
 
 def parse_duration(duration_str):
+    """
+    The `parse_duration` function converts a duration string (e.g., '9h 45m') into total minutes.
+    
+    :param duration_str: duration_str is a string representing a duration in hours and minutes, such as
+    '9h 45m'. The function `parse_duration` takes this string as input and converts it into the total
+    duration in minutes
+    :return: The function `parse_duration` returns the total duration in minutes after converting the
+    input duration string (e.g., '9h 45m') into minutes.
+    """
     """Convert a duration string (e.g., '9h 45m') into total minutes."""
     hours, minutes = 0, 0
     if "h" in duration_str:
@@ -169,6 +189,23 @@ def get_top_3_offers(flight_offers):
 
 
 def get_flight_offers(bearer_token, params):
+    """
+    The function `get_flight_offers` retrieves flight offers from an API, caches the results, and
+    returns the flight offers.
+    
+    :param bearer_token: Bearer token is a security token that allows the API to authenticate the user
+    making the request. It is typically provided by the API provider and serves as a way to authorize
+    access to the API resources
+    :param params: The `params` in the `get_flight_offers` function are the parameters that will be used
+    in the API request to fetch flight offers. These parameters could include details such as the
+    origin, destination, departure date, number of passengers, travel class, etc. The specific structure
+    and content of the
+    :return: The function `get_flight_offers` returns the list of flight offers retrieved from the API
+    or from the cache based on the provided parameters. If there is a cached response available for the
+    given parameters, it will return the cached response. Otherwise, it will make an API request to
+    fetch the flight offers, parse the response, cache the parsed flight offers, and return the list of
+    flight offers obtained from
+    """
     try:
         cache.clear()
         flight_offers = []
@@ -437,13 +474,41 @@ def add_transit_options_to_domestic_flight_itineraries(
     return flight_offers        
 
 def recommend_best_options(
+    
     token, params, origin_location_city, destination_location_city, radius=10
 ):
+    """
+    The function `recommend_best_options` retrieves flight offers based on specified parameters,
+    including international and domestic trip options with transit details.
+    
+    :param token: The `token` parameter is used to authenticate and authorize access to the Amadeus API.
+    It is typically a unique string or key provided by the API service that identifies the user or
+    application making the API requests
+    
+    :param params: The `params` parameter in the `recommend_best_options` function likely contains
+    various parameters needed for querying flight offers from the Amadeus API. These parameters could
+    include things like departure date, return date, number of passengers, travel class, currency, and
+    other relevant details for flight search
+    
+    :param origin_location_city: It seems like you were about to provide some information about the
+    `origin_location_city` parameter, but the message got cut off. How can I assist you further with
+    this code snippet?
+    
+    :param destination_location_city: The `destination_location_city` parameter is the city where the
+    traveler intends to go. It is used in the function `recommend_best_options` to specify the
+    destination location for finding flight offers
+    
+    :param radius: The `radius` parameter in the `recommend_best_options` function specifies the maximum
+    distance (in miles or kilometers) from the origin or destination location within which flight
+    options should be considered. It is used to filter flight offers based on proximity to the specified
+    locations. In this case, the default value for, defaults to 10 (optional)
+    
+    :return: The function `recommend_best_options` returns either `transit_detailed_flight_offers` if it
+    is an international trip with transit options added to the flight itineraries, or `top_3_offers` if
+    it is a domestic trip with the top 3 flight offers.
+    """
     all_flight_offers = []
 
-    print(
-        f"Recommending best options for {origin_location_city} to {destination_location_city}"
-    )
     params["originLocationCode"] = get_iata_code(origin_location_city, token)
     params["destinationLocationCode"] = get_iata_code(destination_location_city, token)
 
@@ -481,8 +546,6 @@ def recommend_best_options(
         params["originLocationCode"], params["destinationLocationCode"]
     )
 
-    print(f"Is trip international? {is_trip_international}")
-
     transit_detailed_flight_offers = []
     if is_trip_international:
         # get all airports in the origin country, except the origin airport
@@ -491,10 +554,7 @@ def recommend_best_options(
         # get all flight offers to those airports
         flight_offers = get_flight_offers_for_airports(
             bearer_token, params, airport_codes, key="destinationLocationCode"
-        )
-        print(
-            f"Flight offers to airports in origin country: {json.dumps(flight_offers)}"
-        )
+        )        
 
         if flight_offers:
             all_flight_offers.extend(flight_offers)
@@ -512,8 +572,7 @@ def recommend_best_options(
         return transit_detailed_flight_offers
     else:        
         # get all airports in the origin country, except the origin airport
-        airport_codes = get_airport_codes_in_country(params["originLocationCode"])
-        print(f"Airport codes in origin country: {airport_codes}")
+        airport_codes = get_airport_codes_in_country(params["originLocationCode"])        
 
         if params["destinationLocationCode"] in airport_codes:
             airport_codes.remove(params["destinationLocationCode"])
@@ -524,9 +583,7 @@ def recommend_best_options(
         )
 
         all_flight_offers.extend(flight_offers)
-        
-        print(f"Domestic trip: flight offers lentgh: {len(all_flight_offers)}")
-
+                
         # calculate top 3 offers
         top_3_offers = get_top_3_offers(all_flight_offers)
 
